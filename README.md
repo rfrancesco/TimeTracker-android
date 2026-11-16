@@ -1,4 +1,4 @@
-# Time Tracker for Android
+# Tracker for Android
 
 A thin Android wrapper (Capacitor 8) around the
 [Time Tracker web app](https://rfrancesco.github.io/TimeTracker/). It loads the web
