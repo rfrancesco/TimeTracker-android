@@ -47,7 +47,10 @@ final class TimerNotification {
         // A Stop from the notification that the web app hasn't applied yet: don't bring it back.
         if (prefs(c).getLong(PENDING_START, -1) == start) return true;
         NotificationManagerCompat nm = NotificationManagerCompat.from(c);
-        if (!nm.areNotificationsEnabled()) return false;
+        if (!nm.areNotificationsEnabled()) {
+            prefs(c).edit().putString("lastError", "Notifications are off for the app").apply();
+            return false;
+        }
         ensureChannel(c);
 
         Intent open = new Intent(c, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -81,12 +84,16 @@ final class TimerNotification {
                 b.setColor(Color.parseColor(color)); // accent only: promoted notifications can't be colorized
             } catch (IllegalArgumentException ignored) {}
         }
+        android.app.Notification n = b.build();
+        SharedPreferences.Editor diag = prefs(c).edit();
+        if (Build.VERSION.SDK_INT >= 36) diag.putBoolean("promotable", n.hasPromotableCharacteristics());
         try {
-            nm.notify(ID, b.build());
-        } catch (SecurityException e) {
-            return false; // POST_NOTIFICATIONS not granted
+            nm.notify(ID, n);
+        } catch (RuntimeException e) {
+            diag.putString("lastError", e.toString()).apply();
+            return false; // e.g. POST_NOTIFICATIONS not granted
         }
-        prefs(c).edit().putLong(SHOWN_START, start).apply();
+        diag.putLong(SHOWN_START, start).remove("lastError").putLong("lastShown", System.currentTimeMillis()).apply();
         return true;
     }
 

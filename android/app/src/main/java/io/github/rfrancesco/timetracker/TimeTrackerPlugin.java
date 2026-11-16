@@ -40,10 +40,8 @@ public class TimeTrackerPlugin extends Plugin {
     /** {start: epoch ms, title, color?}: show or update the running-timer notification. */
     @PluginMethod
     public void showTimer(PluginCall call) {
-        if (Build.VERSION.SDK_INT >= 33 && getPermissionState("notifications") != PermissionState.GRANTED
-            && !getContext().getSharedPreferences("timer", 0).getBoolean("askedNotifications", false)) {
-            // Ask once; after that the user decides in system settings.
-            getContext().getSharedPreferences("timer", 0).edit().putBoolean("askedNotifications", true).apply();
+        if (Build.VERSION.SDK_INT >= 33 && getPermissionState("notifications") != PermissionState.GRANTED) {
+            // Android itself stops showing the prompt after the user declines twice.
             requestPermissionForAlias("notifications", call, "afterPermission");
             return;
         }
@@ -66,6 +64,53 @@ public class TimeTrackerPlugin extends Plugin {
         JSObject r = new JSObject();
         r.put("shown", shown);
         call.resolve(r);
+    }
+
+    /** Diagnostics for Settings: permission, channel, Live Update eligibility, last error. */
+    @PluginMethod
+    public void status(PluginCall call) {
+        android.content.Context c = getContext();
+        android.content.SharedPreferences p = TimerNotification.prefs(c);
+        android.app.NotificationManager nm = c.getSystemService(android.app.NotificationManager.class);
+        JSObject r = new JSObject();
+        r.put("sdk", Build.VERSION.SDK_INT);
+        r.put("permission", getPermissionState("notifications").toString());
+        r.put("notificationsEnabled", nm.areNotificationsEnabled());
+        if (Build.VERSION.SDK_INT >= 26) {
+            android.app.NotificationChannel ch = nm.getNotificationChannel(TimerNotification.CHANNEL);
+            if (ch != null) r.put("channelImportance", ch.getImportance());
+        }
+        if (Build.VERSION.SDK_INT >= 36) {
+            r.put("liveUpdatesAllowed", nm.canPostPromotedNotifications());
+            if (p.contains("promotable")) r.put("promotable", p.getBoolean("promotable", false));
+        }
+        boolean posted = false;
+        if (Build.VERSION.SDK_INT >= 23) {
+            for (android.service.notification.StatusBarNotification sbn : nm.getActiveNotifications()) {
+                if (sbn.getId() == TimerNotification.ID) {
+                    posted = true;
+                    if (Build.VERSION.SDK_INT >= 36) r.put("promoted", (sbn.getNotification().flags & android.app.Notification.FLAG_PROMOTED_ONGOING) != 0);
+                }
+            }
+        }
+        r.put("posted", posted);
+        if (p.contains("lastError")) r.put("lastError", p.getString("lastError", ""));
+        if (p.contains("lastShown")) r.put("lastShown", p.getLong("lastShown", 0));
+        call.resolve(r);
+    }
+
+    /** Open the system page for this app's notifications (incl. the Live updates switch). */
+    @PluginMethod
+    public void openNotificationSettings(PluginCall call) {
+        Intent i;
+        if (Build.VERSION.SDK_INT >= 26) {
+            i = new Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
+        } else {
+            i = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getContext().getPackageName()));
+        }
+        getActivity().startActivity(i);
+        call.resolve();
     }
 
     @PluginMethod
