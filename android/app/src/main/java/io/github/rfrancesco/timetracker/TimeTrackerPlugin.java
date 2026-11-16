@@ -54,13 +54,15 @@ public class TimeTrackerPlugin extends Plugin {
     }
 
     private void doShow(PluginCall call) {
-        Double start = call.getDouble("start");
+        // Epoch ms arrive as Long (Capacitor's getDouble ignores Longs), so accept any number.
+        Object rawStart = call.getData().opt("start");
         String title = call.getString("title");
-        if (start == null || title == null) {
-            call.reject("start and title are required");
+        if (!(rawStart instanceof Number) || title == null) {
+            call.reject("showTimer: start (number) and title are required, got start=" + rawStart);
             return;
         }
-        boolean shown = TimerNotification.show(getContext(), start.longValue(), title, call.getString("color"));
+        long start = ((Number) rawStart).longValue();
+        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"));
         JSObject r = new JSObject();
         r.put("shown", shown);
         call.resolve(r);
