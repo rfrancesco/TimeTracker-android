@@ -62,7 +62,16 @@ public class TimeTrackerPlugin extends Plugin {
             return;
         }
         long start = ((Number) rawStart).longValue();
-        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"));
+        // Optional (newer web app): the area's icon as a white-on-transparent PNG (base64).
+        android.graphics.Bitmap glyph = null;
+        String icon = call.getString("icon");
+        if (icon != null) {
+            try {
+                byte[] png = android.util.Base64.decode(icon, android.util.Base64.DEFAULT);
+                glyph = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length);
+            } catch (IllegalArgumentException ignored) {}
+        }
+        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"), call.getString("onColor"), glyph);
         JSObject r = new JSObject();
         r.put("shown", shown);
         call.resolve(r);
