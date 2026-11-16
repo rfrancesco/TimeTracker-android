@@ -1,0 +1,18 @@
+{
+  "name": "timetracker-android",
+  "version": "1.0.0",
+  "description": "Android wrapper for Time Tracker: loads the web app, adds the running-timer Live Update notification.",
+  "scripts": {
+    "sync": "cap sync android",
+    "build:debug": "cap sync android && cd android && ./gradlew assembleDebug",
+    "build:release": "cap sync android && cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  },
+  "private": true
+}

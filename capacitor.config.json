@@ -1,0 +1,12 @@
+{
+  "appId": "io.github.rfrancesco.timetracker",
+  "appName": "Time Tracker",
+  "webDir": "www",
+  "server": {
+    "url": "https://rfrancesco.github.io/TimeTracker/",
+    "errorPath": "index.html"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

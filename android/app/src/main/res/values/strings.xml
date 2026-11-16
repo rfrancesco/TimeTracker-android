@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Time Tracker</string>
+    <string name="title_activity_main">Time Tracker</string>
+    <string name="package_name">io.github.rfrancesco.timetracker</string>
+    <string name="custom_url_scheme">io.github.rfrancesco.timetracker</string>
+    <string name="channel_timer">Running timer</string>
+    <string name="stop">Stop</string>
+    <string name="since">Since %1$s</string>
+</resources>
