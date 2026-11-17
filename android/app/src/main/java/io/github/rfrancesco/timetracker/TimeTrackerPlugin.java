@@ -32,10 +32,12 @@ public class TimeTrackerPlugin extends Plugin {
         TimerNotification.ensureChannel(getContext());
     }
 
-    static void notifyStopped() {
+    /** The notification was tapped: the web app switches to the Timer tab. */
+    static void notifyOpenTimer() {
         TimeTrackerPlugin p = instance.get();
-        if (p != null) p.notifyListeners("stop", new JSObject());
+        if (p != null) p.notifyListeners("openTimer", new JSObject());
     }
+
 
     /** {start: epoch ms, title, color?}: show or update the running-timer notification. */
     @PluginMethod
@@ -71,7 +73,9 @@ public class TimeTrackerPlugin extends Plugin {
                 glyph = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length);
             } catch (IllegalArgumentException ignored) {}
         }
-        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"), call.getString("onColor"), glyph);
+        // Optional (newer web app): false = quiet notification (no live update, no ticking time).
+        boolean promote = call.getBoolean("promote", true);
+        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"), call.getString("onColor"), glyph, promote);
         JSObject r = new JSObject();
         r.put("shown", shown);
         call.resolve(r);

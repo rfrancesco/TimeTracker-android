@@ -33,8 +33,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
-        <!-- Stop on the notification. Not exported: only our own PendingIntent reaches it. -->
-        <receiver android:name=".StopReceiver" android:exported="false" />
     </application>
 
     <!-- Permissions -->
