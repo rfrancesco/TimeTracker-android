@@ -5,17 +5,18 @@ the data invariants). The app loads `server.url` = GitHub Pages; `www/` only hol
 an offline error page. Owner's phone: Pixel 6a, Android 17.
 
 ## Native code (android/app/src/main/java/io/github/rfrancesco/timetracker)
-- `TimeTrackerPlugin`: plugin "TimeTracker": `showTimer({start,title,color,onColor,icon,promote})`,
+- `TimeTrackerPlugin`: plugin "TimeTracker": `showTimer({start,title,color,onColor,icon,promote,showTime})`,
   `hideTimer()`, `peekPendingStop()` + `clearPendingStop({start})` (old: `takePendingStop()`),
   `shareFile({name,text})`, `status()`, `openNotificationSettings()`, events `stop`
   (older versions) and `openTimer` (notification tapped while the app is open).
   Web side: `src/native.ts` in the web repo (a no-op in browsers; older wrappers
   must keep working, so methods are only added, never changed).
-- `TimerNotification`: ongoing, no actions, tap opens the Timer. `promote` true:
-  `setRequestPromotedOngoing` (live update: status-bar chip, lock screen) + system
-  chronometer; false: quiet (no chronometer, no "when"). Public on the lock screen.
-  Promoted notifications must not be colorized. Channel `running_timer` (DEFAULT
-  importance, no sound/vibration: LOW counts as silent and is hidden on the lock screen).
+- `TimerNotification`: ongoing, no actions, tap opens the Timer. Always promoted
+  (`setRequestPromotedOngoing`: live update, chip at the far left; non-promoted
+  notifications rank after messaging apps). `showTime` true: system chronometer;
+  false: no chronometer/"when" and no short text → icon-only chip. Public on the lock
+  screen. Promoted notifications must not be colorized. Channel `running_timer`
+  (DEFAULT importance, no sound/vibration: LOW counts as silent, hidden on the lock screen).
 - Pending stop (peek/clear/take): only older versions recorded one (Stop action);
   kept so the plugin API never changes.
 - `MainActivity`: back = WebView goBack (the web app's history guards close dialogs);

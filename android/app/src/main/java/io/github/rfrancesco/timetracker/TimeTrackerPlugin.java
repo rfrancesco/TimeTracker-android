@@ -73,9 +73,11 @@ public class TimeTrackerPlugin extends Plugin {
                 glyph = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length);
             } catch (IllegalArgumentException ignored) {}
         }
-        // Optional (newer web app): false = quiet notification (no live update, no ticking time).
+        // Optional: promote (default true) = ask for a live update; showTime (default
+        // true) = the running time ticks. Newer web apps always promote and choose the time per area.
         boolean promote = call.getBoolean("promote", true);
-        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"), call.getString("onColor"), glyph, promote);
+        boolean showTime = call.getBoolean("showTime", promote);
+        boolean shown = TimerNotification.show(getContext(), start, title, call.getString("color"), call.getString("onColor"), glyph, promote, showTime);
         JSObject r = new JSObject();
         r.put("shown", shown);
         call.resolve(r);

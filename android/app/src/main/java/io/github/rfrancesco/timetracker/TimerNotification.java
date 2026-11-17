@@ -21,11 +21,11 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /**
- * The running-timer notification: ongoing; tapping it opens the Timer. Per area the
- * web app chooses a live update (Android 16+: status-bar chip with the system
- * chronometer, also on the lock screen) or a quiet notification (area icon and
- * "Since …", no ticking time). No actions. The notification only mirrors the web
- * app's state; the data stays in the web app's IndexedDB.
+ * The running-timer notification: ongoing, always asking to be a live update
+ * (Android 16+: status-bar chip at the far left, top of the lock screen); tapping it
+ * opens the Timer. Per area the web app chooses whether the running time ticks (system
+ * chronometer in the chip and notification) or not (icon-only chip, "Since …").
+ * No actions. It only mirrors the web app's state; the data stays in IndexedDB.
  */
 final class TimerNotification {
     // v2: default importance (v1 was LOW, which Android treats as "silent" and hides
@@ -59,7 +59,7 @@ final class TimerNotification {
     }
 
     /** Show (or update) the notification. Returns false if notifications are off. */
-    static synchronized boolean show(Context c, long start, String title, String color, String inkColor, Bitmap glyph, boolean promote) {
+    static synchronized boolean show(Context c, long start, String title, String color, String inkColor, Bitmap glyph, boolean promote, boolean showTime) {
         // A Stop from the notification that the web app hasn't applied yet: don't bring it back.
         if (prefs(c).getLong(PENDING_START, -1) == start) return true;
         NotificationManagerCompat nm = NotificationManagerCompat.from(c);
@@ -81,9 +81,10 @@ final class TimerNotification {
             .setContentTitle(title)
             .setContentText(c.getString(R.string.since, since))
             .setWhen(start)
-            // Live update: the system chronometer ticks; quiet: no running time at all.
-            .setShowWhen(promote)
-            .setUsesChronometer(promote)
+            // Running time: the system chronometer ticks; otherwise no time at all, so the
+            // chip shows just the icon (no short text set either).
+            .setShowWhen(showTime)
+            .setUsesChronometer(showTime)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
