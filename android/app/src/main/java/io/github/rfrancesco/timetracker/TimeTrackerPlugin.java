@@ -142,6 +142,33 @@ public class TimeTrackerPlugin extends Plugin {
         call.resolve(r);
     }
 
+    /**
+     * The pending Stop from the notification, {start, end} or {}; it stays until
+     * clearPendingStop, so a reload between reading and saving can't lose it.
+     */
+    @PluginMethod
+    public void peekPendingStop(PluginCall call) {
+        long[] s = TimerNotification.peekPendingStop(getContext());
+        JSObject r = new JSObject();
+        if (s != null) {
+            r.put("start", s[0]);
+            r.put("end", s[1]);
+        }
+        call.resolve(r);
+    }
+
+    /** {start}: the web app has applied the stop for this timer (or found it no longer applies). */
+    @PluginMethod
+    public void clearPendingStop(PluginCall call) {
+        Object raw = call.getData().opt("start");
+        if (!(raw instanceof Number)) {
+            call.reject("clearPendingStop: start (number) is required");
+            return;
+        }
+        TimerNotification.clearPendingStop(getContext(), ((Number) raw).longValue());
+        call.resolve();
+    }
+
     /** {name, text, mimeType?}: share a text file (backup export) through the Android share sheet. */
     @PluginMethod
     public void shareFile(PluginCall call) {

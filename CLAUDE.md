@@ -6,7 +6,8 @@ an offline error page. Owner's phone: Pixel 6a, Android 17.
 
 ## Native code (android/app/src/main/java/io/github/rfrancesco/timetracker)
 - `TimeTrackerPlugin`: plugin "TimeTracker": `showTimer({start,title,color})`,
-  `hideTimer()`, `takePendingStop()`, `shareFile({name,text})`, event `stop`.
+  `hideTimer()`, `peekPendingStop()` + `clearPendingStop({start})` (old: `takePendingStop()`),
+  `shareFile({name,text})`, `status()`, `openNotificationSettings()`, event `stop`.
   Web side: `src/native.ts` in the web repo (a no-op in browsers; older wrappers
   must keep working, so methods are only added, never changed).
 - `TimerNotification`: ongoing, `setRequestPromotedOngoing` (Live Update chip),

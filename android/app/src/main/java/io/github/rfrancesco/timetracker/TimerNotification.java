@@ -152,7 +152,21 @@ final class TimerNotification {
         return true;
     }
 
-    /** Hand the pending stop to the web app (once). Returns {start, end} or null. */
+    /** The pending stop, left in place until the web app confirms it was applied. */
+    static synchronized long[] peekPendingStop(Context c) {
+        SharedPreferences p = prefs(c);
+        long start = p.getLong(PENDING_START, -1);
+        if (start < 0) return null;
+        return new long[] { start, p.getLong(PENDING_END, -1) };
+    }
+
+    /** The web app applied (or deliberately ignored) the stop for `start`: forget it. */
+    static synchronized void clearPendingStop(Context c, long start) {
+        SharedPreferences p = prefs(c);
+        if (p.getLong(PENDING_START, -1) == start) p.edit().remove(PENDING_START).remove(PENDING_END).apply();
+    }
+
+    /** Old one-step handover (kept for older web versions): returns and forgets it. */
     static synchronized long[] takePendingStop(Context c) {
         SharedPreferences p = prefs(c);
         long start = p.getLong(PENDING_START, -1);
