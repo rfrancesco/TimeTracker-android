@@ -11,12 +11,13 @@ an offline error page. Owner's phone: Pixel 6a, Android 17.
   (older versions) and `openTimer` (notification tapped while the app is open).
   Web side: `src/native.ts` in the web repo (a no-op in browsers; older wrappers
   must keep working, so methods are only added, never changed).
-- `TimerNotification`: ongoing, no actions, tap opens the Timer. Always promoted
-  (`setRequestPromotedOngoing`: live update, chip at the far left; non-promoted
-  notifications rank after messaging apps). `showTime` true: system chronometer;
-  false: no chronometer/"when" and no short text → icon-only chip. Public on the lock
-  screen. Promoted notifications must not be colorized. Channel `running_timer`
-  (DEFAULT importance, no sound/vibration: LOW counts as silent, hidden on the lock screen).
+- `TimerNotification`: ongoing, no actions, tap opens the Timer. `promote` (the
+  area's live update setting): `setRequestPromotedOngoing` → chip at the far left, top
+  of the lock screen (may hide other icons); false → plain notification (ranks after
+  messaging apps). `showTime` (running time On): system chronometer; false: no
+  chronometer/"when", so an icon-only chip. Chip and notification share that clock.
+  Public on the lock screen. Promoted notifications must not be colorized. Channel
+  `running_timer` (DEFAULT importance, no sound/vibration: LOW counts as silent).
 - Pending stop (peek/clear/take): only older versions recorded one (Stop action);
   kept so the plugin API never changes.
 - `MainActivity`: back = WebView goBack (the web app's history guards close dialogs);

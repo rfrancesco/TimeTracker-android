@@ -6,9 +6,10 @@ app from GitHub Pages (so web updates arrive without reinstalling) and adds one
 thing a PWA can't do: a **running-timer notification** that Android 16+ promotes
 to a **Live Update** (status-bar chip with the elapsed time).
 
-- Every timer is a live update (area icon at the far left of the status bar, top of
-  the lock screen). Per area, the running time can tick there or not (e.g. off for
-  Sleep): Settings → Android app → Running time. Tapping the notification opens the Timer.
+- Per area: a live update (area icon at the far left of the status bar, top of the
+  lock screen) or a plain notification (Settings → Android app → Live updates), and
+  whether the running time ticks (Settings → Appearance → Running time: Off · App only
+  · On). Tapping the notification opens the Timer.
 - Data stays in the web app's storage on the phone. The wrapper only mirrors the timer.
 
 Permissions: Internet (to load the app), notifications, promoted notifications.
