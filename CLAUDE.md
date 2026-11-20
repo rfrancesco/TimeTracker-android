@@ -23,6 +23,12 @@ an offline error page. Owner's phone: Pixel 6a, Android 17.
 - Haptics: `haptic({kind: tick|long|confirm})` → `performHapticFeedback` (no VIBRATE
   permission). The WebView's own haptic feedback is disabled (its long-press buzz came
   on Android's schedule, not the web app's), so the web app's gestures decide.
+- Load errors: `MainActivity` wraps Capacitor's `BridgeWebViewClient`: a failed
+  main-frame load of the web app is recorded (`LoadErrors`, shown by `status()` →
+  `lastLoadError` and on the error page) and retried once after 700 ms (a cold start
+  can race the service worker) before the error page (`www/index.html`), which keeps
+  retrying (every 5 s, on `online`, Retry button). `status()` also reports
+  `longPressTimeout` (ViewConfiguration) for the web app's holds.
 - `MainActivity`: back = WebView goBack (the web app's history guards close dialogs);
   `onNewIntent` with the open-Timer extra → `openTimer` event.
 

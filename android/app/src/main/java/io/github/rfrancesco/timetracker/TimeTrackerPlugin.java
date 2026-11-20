@@ -113,6 +113,16 @@ public class TimeTrackerPlugin extends Plugin {
         r.put("posted", posted);
         if (p.contains("lastError")) r.put("lastError", p.getString("lastError", ""));
         if (p.contains("lastShown")) r.put("lastShown", p.getLong("lastShown", 0));
+        android.content.SharedPreferences le = LoadErrors.prefs(c);
+        if (le.contains("at")) {
+            JSObject e = new JSObject();
+            e.put("at", le.getLong("at", 0));
+            e.put("code", le.getInt("code", 0));
+            e.put("description", le.getString("description", ""));
+            e.put("url", le.getString("url", ""));
+            r.put("lastLoadError", e);
+        }
+        r.put("longPressTimeout", android.view.ViewConfiguration.getLongPressTimeout());
         call.resolve(r);
     }
 

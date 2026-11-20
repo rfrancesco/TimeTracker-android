@@ -1,2 +1,43 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Time Tracker</title>
-<body style="font-family:sans-serif;padding:24px">Couldn't load Time Tracker. Check the connection and reopen the app.</body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracker</title>
+<style>
+  :root { color-scheme: light dark; --bg: #fff; --fg: #1a1a1a; --muted: #666; --btn: #1e88e5; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #eee; --muted: #999; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; }
+  main { max-width: 320px; padding: 24px; text-align: center; }
+  h1 { font-size: 1.2rem; font-weight: 600; margin: 0 0 8px; }
+  p { color: var(--muted); margin: 0 0 20px; line-height: 1.4; }
+  button { font: inherit; font-weight: 600; color: #fff; background: var(--btn); border: 0; border-radius: 22px; padding: 10px 24px; }
+  #why { font-size: 0.8rem; margin-top: 20px; word-break: break-word; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Can’t open Tracker right now</h1>
+  <p>It will open by itself as soon as it can. Your data is safe on this phone.</p>
+  <button id="retry">Retry</button>
+  <p id="why"></p>
+</main>
+<script>
+  // Shown by the Android app when the web app's page fails to load. Keeps retrying:
+  // every few seconds, when the connection comes back, and on Retry.
+  var APP = 'https://rfrancesco.github.io/TimeTracker/';
+  var go = function () { location.replace(APP); };
+  document.getElementById('retry').onclick = go;
+  window.addEventListener('online', go);
+  setTimeout(go, 5000);
+  // What the WebView reported (from the app), to tell what went wrong.
+  try {
+    var tt = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TimeTracker;
+    if (tt && tt.status) tt.status().then(function (s) {
+      var e = s && s.lastLoadError;
+      if (e) document.getElementById('why').textContent = (e.description || 'error') + ' (' + e.code + ') · ' + new Date(e.at).toLocaleTimeString();
+    });
+  } catch (_) {}
+</script>
+</body>
+</html>
