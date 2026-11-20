@@ -7,7 +7,7 @@ an offline error page. Owner's phone: Pixel 6a, Android 17.
 ## Native code (android/app/src/main/java/io/github/rfrancesco/timetracker)
 - `TimeTrackerPlugin`: plugin "TimeTracker": `showTimer({start,title,color,onColor,icon,promote,showTime})`,
   `hideTimer()`, `peekPendingStop()` + `clearPendingStop({start})` (old: `takePendingStop()`),
-  `shareFile({name,text})`, `status()`, `openNotificationSettings()`, events `stop`
+  `shareFile({name,text})`, `status()`, `openNotificationSettings()`, `haptic({kind})`, events `stop`
   (older versions) and `openTimer` (notification tapped while the app is open).
   Web side: `src/native.ts` in the web repo (a no-op in browsers; older wrappers
   must keep working, so methods are only added, never changed).
@@ -20,6 +20,9 @@ an offline error page. Owner's phone: Pixel 6a, Android 17.
   `running_timer` (DEFAULT importance, no sound/vibration: LOW counts as silent).
 - Pending stop (peek/clear/take): only older versions recorded one (Stop action);
   kept so the plugin API never changes.
+- Haptics: `haptic({kind: tick|long|confirm})` → `performHapticFeedback` (no VIBRATE
+  permission). The WebView's own haptic feedback is disabled (its long-press buzz came
+  on Android's schedule, not the web app's), so the web app's gestures decide.
 - `MainActivity`: back = WebView goBack (the web app's history guards close dialogs);
   `onNewIntent` with the open-Timer extra → `openTimer` event.
 

@@ -116,6 +116,24 @@ public class TimeTrackerPlugin extends Plugin {
         call.resolve(r);
     }
 
+    /**
+     * {kind: tick | long | confirm}: system haptic feedback (no VIBRATE permission
+     * needed, follows the phone's haptic settings). The WebView's own haptics are off
+     * (MainActivity), so this is the only buzz the web app's gestures produce.
+     */
+    @PluginMethod
+    public void haptic(PluginCall call) {
+        String kind = call.getString("kind", "tick");
+        int effect;
+        if ("long".equals(kind)) effect = android.view.HapticFeedbackConstants.LONG_PRESS;
+        else if ("confirm".equals(kind)) effect = Build.VERSION.SDK_INT >= 30 ? android.view.HapticFeedbackConstants.CONFIRM : android.view.HapticFeedbackConstants.VIRTUAL_KEY;
+        else effect = android.view.HapticFeedbackConstants.CLOCK_TICK;
+        android.webkit.WebView wv = getBridge().getWebView();
+        // Our view has haptics disabled (no stray long-press buzz), so override that setting here.
+        getActivity().runOnUiThread(() -> wv.performHapticFeedback(effect, android.view.HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING));
+        call.resolve();
+    }
+
     /** Open the system page for this app's notifications (incl. the Live updates switch). */
     @PluginMethod
     public void openNotificationSettings(PluginCall call) {

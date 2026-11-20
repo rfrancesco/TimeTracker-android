@@ -16,6 +16,10 @@ public class MainActivity extends BridgeActivity {
 
         // Back = browser back, like the PWA: the web app's history guards close
         // dialogs and return to the previous tab. With no history left, leave the app.
+        // The WebView's own long-press haptic fires on Android's schedule (~400 ms+), not
+        // when the web app's hold gestures arm; the web app asks for haptics itself
+        // (TimeTrackerPlugin.haptic), so the view's own are off.
+        if (getBridge() != null) getBridge().getWebView().setHapticFeedbackEnabled(false);
         // (A cold start from the notification lands on the Timer anyway: it is the start page.)
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
